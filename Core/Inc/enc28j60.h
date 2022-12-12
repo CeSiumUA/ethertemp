@@ -139,6 +139,7 @@
 #define MAMXFLL                                                 (0x0A | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
 #define MAMXFLH                                                 (0x0B | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
 #define MICMD                                                   (0x12 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
+#define MICMD_MIISCAN_BIT                                       (1 << 1)
 #define MICMD_MIIRD_BIT                                         (1 << 0)
 #define MIREGADR                                                (0x14 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
 #define MIWRL                                                   (0x16 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)

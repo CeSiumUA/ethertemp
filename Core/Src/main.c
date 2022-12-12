@@ -20,11 +20,10 @@
 #include "main.h"
 #include "spi.h"
 #include "gpio.h"
-#include "ethernet.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "ethernet.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -74,7 +73,6 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
-  initialize_enc28j60();
   /* USER CODE END Init */
 
   /* Configure the system clock */
@@ -88,6 +86,7 @@ int main(void)
   MX_GPIO_Init();
   MX_SPI5_Init();
   /* USER CODE BEGIN 2 */
+  initialize_enc28j60();
   /* USER CODE END 2 */
 
   /* Infinite loop */

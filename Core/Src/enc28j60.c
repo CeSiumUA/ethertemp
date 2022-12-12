@@ -16,7 +16,7 @@ static uint8_t command_op_codes[COMMANDS_NUM] = {0x00, 0x01, 0x02, 0x03, 0x04, 0
 
 uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
 
-uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 134};
+uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 122};
 
 static uint8_t read_control_reg(uint8_t reg);
 static uint16_t read_control_reg_pair(uint8_t reg);
