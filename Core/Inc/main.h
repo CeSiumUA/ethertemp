@@ -46,7 +46,12 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-
+#define MAC_ADDRESS_BYTES_NUM                                   6
+#define IP_ADDRESS_BYTES_NUM                                    4
+#define htons(val)                                              ((val << 8) & 0xFF00) | ((val >> 8) & 0xFF)
+#define htonl(val)                                              ((val << 8) & 0xFF0000) | ((val >> 8) & 0xFF00) | ((val << 24) & 0xFF000000) | ((val >> 24) & 0xFF)
+#define ntohs(val)                                              htons(val)
+#define ntohl(val)                                              htonl(val)
 /* USER CODE END EM */
 
 /* Exported functions prototypes ---------------------------------------------*/
@@ -63,7 +68,8 @@ void Error_Handler(void);
 #define ENC28J60_RESET_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
-
+extern uint8_t ip_address[IP_ADDRESS_BYTES_NUM];
+extern uint8_t mac_address[MAC_ADDRESS_BYTES_NUM];
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

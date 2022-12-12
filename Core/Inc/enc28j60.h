@@ -10,8 +10,6 @@
 
 #include "spi.h"
 
-
-#pragma region ENC28J60_Defines
 #define MAC_ADDRESS_BYTES_NUM                                   6
 #define IP_ADDRESS_BYTES_NUM                                    4
 #define ENC28J60_SPI_TIMEOUT                                    10
@@ -194,9 +192,7 @@
 #define ENC28J60_FRAME_DATA_MAX                                 1024
 #define ENC28J60_HEADER_SIZE                                    6
 #define ENC28J60_CRC_SIZE                                       4
-#pragma endregion
 
-#pragma region ENC28J60_TypeDefs
 typedef enum
 {
     READ_CONTROL_REG,
@@ -233,41 +229,10 @@ typedef struct ENC28J60_Frame
     uint8_t data[ENC28J60_FRAME_DATA_MAX];
     uint32_t checkSum;
 } ENC28J60_Frame;
-#pragma endregion
 
-#pragma region Functions_Headers
-static uint8_t read_control_reg(uint8_t reg);
-static uint16_t read_control_reg_pair(uint8_t reg);
-static void read_buffer_mem(uint8_t *data, size_t data_size);
-
-static void write_control_reg(uint8_t reg, uint8_t reg_data);
-static void write_control_reg_pair(uint8_t reg, uint16_t reg_data);
-static void write_buffer_mem(uint8_t *data, size_t data_size);
-
-static uint16_t read_phy_reg(uint8_t reg);
-static void write_phy_reg(uint8_t reg, uint16_t reg_data);
-
-static void bit_field_set(uint8_t reg, uint8_t reg_data);
-static void bit_field_clear(uint8_t reg, uint8_t reg_data);
-
-static void system_reset(void);
-
-static void transmit_frame(uint8_t *data, size_t size);
-static uint16_t receive_frame(ENC28J60_Frame *frame);
-static void write_command(ENC28J60_Command command, uint8_t arg_data);
-
-static void set_cs(ENC28J60_CS_State state);
-static void write_byte(uint8_t data);
-static void write_bytes(uint8_t *data, size_t size);
-static uint8_t read_byte(void);
-
-static uint8_t get_reg_addr(uint8_t reg);
-static ENC28J60_RegBank get_reg_bank(uint8_t reg);
-static ENC28J60_RegType get_reg_type(uint8_t reg);
-static void check_bank(uint8_t reg);
-
+void transmit_frame(uint8_t *data, size_t size);
+uint16_t receive_frame(ENC28J60_Frame *frame);
 void initialize_enc28j60(void);
 void start_enc28j60_receiving(void);
-#pragma endregion
 
 #endif /* INC_ENC28J60_H_ */

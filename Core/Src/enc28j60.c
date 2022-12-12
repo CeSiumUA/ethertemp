@@ -14,7 +14,37 @@ static uint16_t current_ptr = ENC28J60_RX_BUF_START;
 
 static uint8_t command_op_codes[COMMANDS_NUM] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07};
 
-static uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
+uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
+
+uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 134};
+
+static uint8_t read_control_reg(uint8_t reg);
+static uint16_t read_control_reg_pair(uint8_t reg);
+static void read_buffer_mem(uint8_t *data, size_t data_size);
+
+static void write_control_reg(uint8_t reg, uint8_t reg_data);
+static void write_control_reg_pair(uint8_t reg, uint16_t reg_data);
+static void write_buffer_mem(uint8_t *data, size_t data_size);
+
+static uint16_t read_phy_reg(uint8_t reg);
+static void write_phy_reg(uint8_t reg, uint16_t reg_data);
+
+static void bit_field_set(uint8_t reg, uint8_t reg_data);
+static void bit_field_clear(uint8_t reg, uint8_t reg_data);
+
+static void system_reset(void);
+
+static void write_command(ENC28J60_Command command, uint8_t arg_data);
+
+static void set_cs(ENC28J60_CS_State state);
+static void write_byte(uint8_t data);
+static void write_bytes(uint8_t *data, size_t size);
+static uint8_t read_byte(void);
+
+static uint8_t get_reg_addr(uint8_t reg);
+static ENC28J60_RegBank get_reg_bank(uint8_t reg);
+static ENC28J60_RegType get_reg_type(uint8_t reg);
+static void check_bank(uint8_t reg);
 
 static ENC28J60_RegType get_reg_type(uint8_t reg){
     // Applies a mask to a register, and shift to right to get a raw type value
@@ -25,6 +55,7 @@ static ENC28J60_RegType get_reg_type(uint8_t reg){
 
 static ENC28J60_RegBank get_reg_bank(uint8_t reg){
     ENC28J60_RegBank bank = (ENC28J60_RegBank) ((reg & ENC28J60_REG_BANK_MASK) >> ENC28J60_REG_BANK_OFFSET);
+    return bank;
 }
 
 static uint8_t get_reg_addr(uint8_t reg){
@@ -97,7 +128,7 @@ static void write_phy_reg(uint8_t reg, uint16_t reg_data){
     while((read_control_reg(MISTAT) & MISTAT_BUSY_BIT) != 0){}
 }
 
-static void transmit_frame(uint8_t *data, size_t size){
+void transmit_frame(uint8_t *data, size_t size){
     while((read_control_reg(ECON1) & ECON1_TXRTS_BIT) != 0){
         if((read_control_reg(EIR) & EIR_TXERIF_BIT) != 0){
             bit_field_set(ECON1, ECON1_TXRST_BIT);
@@ -117,7 +148,7 @@ static void transmit_frame(uint8_t *data, size_t size){
     bit_field_set(ECON1, ECON1_TXRTS_BIT);
 }
 
-static uint16_t receive_frame(ENC28J60_Frame *frame){
+uint16_t receive_frame(ENC28J60_Frame *frame){
     uint16_t data_size = 0;
     uint8_t packets_count = read_control_reg(EPKTCNT);
 
