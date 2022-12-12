@@ -8,39 +8,13 @@
 #include "enc28j60.h"
 #include <stdint.h>
 
-#pragma region Functions_Headers
-static uint8_t read_control_reg(uint8_t reg);
-static uint16_t read_control_reg_pair(uint8_t reg);
-static void read_buffer_mem(uint8_t *data, size_t data_size);
-
-static void write_control_reg(uint8_t reg, uint8_t reg_data);
-static void write_control_reg_pair(uint8_t reg, uint16_t reg_data);
-static void write_buffer_mem(uint8_t *data, size_t data_size);
-
-static uint16_t read_phy_reg(uint8_t reg);
-static void write_phy_reg(uint8_t reg, uint16_t reg_data);
-
-static void bit_field_set(uint8_t reg, uint8_t reg_data);
-static void bit_field_clear(uint8_t reg, uint8_t reg_data);
-
-static void system_reset(void);
-
-static void write_command(ENC28J60_Command command, uint8_t arg_data);
-
-static void set_cs(ENC28J60_CS_State state);
-static void write_byte(uint8_t data);
-static void write_bytes(uint8_t *data, size_t size);
-static uint8_t read_byte(void);
-
-static uint8_t get_reg_addr(uint8_t reg);
-static ENC28J60_RegBank get_reg_bank(uint8_t reg);
-static ENC28J60_RegType get_reg_type(uint8_t reg);
-static void check_bank(uint8_t reg);
-#pragma endregion
-
 static ENC28J60_RegBank current_bank = BANK_0;
 
+static uint16_t current_ptr = ENC28J60_RX_BUF_START;
+
 static uint8_t command_op_codes[COMMANDS_NUM] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07};
+
+static uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
 
 static ENC28J60_RegType get_reg_type(uint8_t reg){
     // Applies a mask to a register, and shift to right to get a raw type value
@@ -121,6 +95,62 @@ static void write_phy_reg(uint8_t reg, uint16_t reg_data){
     write_control_reg_pair(MIWRL, reg_data);
 
     while((read_control_reg(MISTAT) & MISTAT_BUSY_BIT) != 0){}
+}
+
+static void transmit_frame(uint8_t *data, size_t size){
+    while((read_control_reg(ECON1) & ECON1_TXRTS_BIT) != 0){
+        if((read_control_reg(EIR) & EIR_TXERIF_BIT) != 0){
+            bit_field_set(ECON1, ECON1_TXRST_BIT);
+            bit_field_clear(ECON1, ECON1_TXRST_BIT);
+        }
+    }
+
+    write_control_reg_pair(EWRPTL, ENC28J60_TX_BUF_START);
+
+    uint8_t control_bytes = 0x00;
+    write_buffer_mem(&control_bytes, 1);
+    write_buffer_mem(data, size);
+
+    write_control_reg_pair(ETXSTL, ENC28J60_TX_BUF_START);
+    write_control_reg(ETXSTL, ENC28J60_TX_BUF_START + size);
+
+    bit_field_set(ECON1, ECON1_TXRTS_BIT);
+}
+
+static uint16_t receive_frame(ENC28J60_Frame *frame){
+    uint16_t data_size = 0;
+    uint8_t packets_count = read_control_reg(EPKTCNT);
+
+    if(packets_count == 0){
+        return data_size;
+    }
+
+    write_control_reg_pair(ERDPTL, current_ptr);
+
+    read_buffer_mem((uint8_t *)frame, ENC28J60_HEADER_SIZE);
+
+    current_ptr = frame->nextPtr;
+
+    if((frame->status & ENC28J60_FRAME_RX_OK_MASK) != 0){
+        data_size = frame->length - ENC28J60_CRC_SIZE;
+
+        if(data_size > ENC28J60_FRAME_DATA_MAX){
+            data_size = ENC28J60_FRAME_DATA_MAX;
+        }
+
+        read_buffer_mem((uint8_t*)&(frame->data[0]), data_size);
+        read_buffer_mem((uint8_t*)&(frame->checkSum), ENC28J60_CRC_SIZE);
+    }
+
+    uint16_t next_ptr = frame->nextPtr - 1;
+    if(next_ptr > ENC28J60_RX_BUF_END){
+        next_ptr = ENC28J60_RX_BUF_END;
+    }
+
+    write_control_reg_pair(ERXRDPTL, next_ptr);
+    bit_field_set(ECON2, ECON2_PKTDEC_BIT);
+
+    return data_size;
 }
 
 static void write_command(ENC28J60_Command command, uint8_t arg_data){
@@ -230,4 +260,39 @@ static void check_bank(uint8_t reg){
     set_cs(CS_HIGH);
 
     current_bank = reg_bank;
+}
+
+void initialize_enc28j60(void){
+    HAL_GPIO_WritePin(ENC28J60_RESET_GPIO_Port, ENC28J60_RESET_Pin, GPIO_PIN_RESET);
+    HAL_Delay(50);
+    HAL_GPIO_WritePin(ENC28J60_RESET_GPIO_Port, ENC28J60_RESET_Pin, GPIO_PIN_SET);
+    HAL_Delay(50);
+
+    system_reset();
+
+    write_control_reg_pair(ERXSTL, ENC28J60_RX_BUF_START);
+    write_control_reg_pair(ERXNDL, ENC28J60_RX_BUF_END);
+    write_control_reg_pair(ERDPTL, ENC28J60_RX_BUF_START);
+
+    write_control_reg(MAADR1, mac_address[0]);
+    write_control_reg(MAADR2, mac_address[1]);
+    write_control_reg(MAADR3, mac_address[2]);
+    write_control_reg(MAADR4, mac_address[3]);
+    write_control_reg(MAADR5, mac_address[4]);
+    write_control_reg(MAADR6, mac_address[5]);
+
+    write_control_reg_pair(MAIPGL, ENC28J60_NBB_PACKET_GAP);
+    write_control_reg(MABBIPG, ENC28J60_BB_PACKET_GAP);
+
+    write_control_reg(MACON3, MACON3_PADCFG0_BIT | MACON3_TXCRCEN_BIT | MACON3_FRMLNEN_BIT);
+
+    write_control_reg_pair(MAMXFLL, ENC28J60_FRAME_DATA_MAX);
+
+    write_phy_reg(PHCON2, PHCON2_HDLDIS_BIT);
+
+    start_enc28j60_receiving();
+}
+
+void start_enc28j60_receiving(void){
+    bit_field_set(ECON1, ECON1_RXEN_BIT);
 }

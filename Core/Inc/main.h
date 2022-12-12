@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define ENC28J60_CHIP_SELECT_Pin GPIO_PIN_5
 #define ENC28J60_CHIP_SELECT_GPIO_Port GPIOA
+#define ENC28J60_RESET_Pin GPIO_PIN_6
+#define ENC28J60_RESET_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 
