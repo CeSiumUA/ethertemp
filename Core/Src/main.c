@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "spi.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -84,9 +85,15 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_SPI5_Init();
+  MX_USART2_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t init_message[] = "Initializing Ethernet\n";
+  uint8_t init_finish_message[] = "Ethernet initialization finished\n";
+
+  HAL_UART_Transmit(&huart2, init_message, sizeof(init_message), 100);
   initialize_enc28j60();
+  HAL_UART_Transmit(&huart2, init_finish_message, sizeof(init_finish_message), 100);
   /* USER CODE END 2 */
 
   /* Infinite loop */

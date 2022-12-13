@@ -20,11 +20,11 @@ uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 122};
 
 static uint8_t read_control_reg(uint8_t reg);
 static uint16_t read_control_reg_pair(uint8_t reg);
-static void read_buffer_mem(uint8_t *data, size_t data_size);
+static void read_buffer_mem(uint8_t *data, uint16_t data_size);
 
 static void write_control_reg(uint8_t reg, uint8_t reg_data);
 static void write_control_reg_pair(uint8_t reg, uint16_t reg_data);
-static void write_buffer_mem(uint8_t *data, size_t data_size);
+static void write_buffer_mem(uint8_t *data, uint16_t data_size);
 
 static uint16_t read_phy_reg(uint8_t reg);
 static void write_phy_reg(uint8_t reg, uint16_t reg_data);
@@ -38,7 +38,7 @@ static void write_command(ENC28J60_Command command, uint8_t arg_data);
 
 static void set_cs(ENC28J60_CS_State state);
 static void write_byte(uint8_t data);
-static void write_bytes(uint8_t *data, size_t size);
+static void write_bytes(uint8_t *data, uint8_t size);
 static uint8_t read_byte(void);
 
 static uint8_t get_reg_addr(uint8_t reg);
@@ -66,19 +66,19 @@ static void set_cs(ENC28J60_CS_State state){
     HAL_GPIO_WritePin(ENC28J60_CHIP_SELECT_GPIO_Port, ENC28J60_CHIP_SELECT_Pin, (GPIO_PinState)state);
 }
 
-static void write_bytes(uint8_t *data, size_t size){
-    HAL_SPI_Transmit(&hspi5, data, size, ENC28J60_SPI_TIMEOUT);
+static void write_bytes(uint8_t *data, uint8_t size){
+    HAL_SPI_Transmit(&hspi1, data, size, ENC28J60_SPI_TIMEOUT);
 }
 
 static void write_byte(uint8_t data){
-    HAL_SPI_Transmit(&hspi5, &data, 1, ENC28J60_SPI_TIMEOUT);
+    HAL_SPI_Transmit(&hspi1, &data, 1, ENC28J60_SPI_TIMEOUT);
 }
 
 static uint8_t read_byte(void){
     uint8_t tx_data = 0x00;
     uint8_t rx_data = 0x00;
     //FIXME
-    HAL_SPI_TransmitReceive(&hspi5, &tx_data, &rx_data, 1, ENC28J60_SPI_TIMEOUT);
+    HAL_SPI_TransmitReceive(&hspi1, &tx_data, &rx_data, 1, ENC28J60_SPI_TIMEOUT);
     return rx_data;
 }
 
@@ -128,7 +128,7 @@ static void write_phy_reg(uint8_t reg, uint16_t reg_data){
     while((read_control_reg(MISTAT) & MISTAT_BUSY_BIT) != 0){}
 }
 
-void transmit_frame(uint8_t *data, size_t size){
+void transmit_frame(uint8_t *data, uint16_t size){
     while((read_control_reg(ECON1) & ECON1_TXRTS_BIT) != 0){
         if((read_control_reg(EIR) & EIR_TXERIF_BIT) != 0){
             bit_field_set(ECON1, ECON1_TXRST_BIT);
@@ -155,6 +155,10 @@ uint16_t receive_frame(ENC28J60_Frame *frame){
     if(packets_count == 0){
         return data_size;
     }
+
+    uint8_t receive_message_log[] = "There are some packets in buffer\n";
+
+    HAL_UART_Transmit(&huart2, receive_message_log, sizeof(receive_message_log), 100);
 
     write_control_reg_pair(ERDPTL, current_ptr);
 
@@ -235,7 +239,7 @@ static void write_control_reg(uint8_t reg, uint8_t reg_data){
     set_cs(CS_HIGH);
 }
 
-static void read_buffer_mem(uint8_t *data, size_t data_size){
+static void read_buffer_mem(uint8_t *data, uint16_t data_size){
     set_cs(CS_LOW);
 
     write_command(READ_BUFFER_MEM, ENC28J60_BUF_COMMAND_ARG);
@@ -247,7 +251,7 @@ static void read_buffer_mem(uint8_t *data, size_t data_size){
     set_cs(CS_HIGH);
 }
 
-static void write_buffer_mem(uint8_t *data, size_t data_size){
+static void write_buffer_mem(uint8_t *data, uint16_t data_size){
     set_cs(CS_LOW);
 
     write_command(WRITE_BUFFER_MEM, ENC28J60_BUF_COMMAND_ARG);

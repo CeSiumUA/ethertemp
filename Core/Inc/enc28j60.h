@@ -9,6 +9,7 @@
 #define INC_ENC28J60_H_
 
 #include "spi.h"
+#include "usart.h"
 
 #define MAC_ADDRESS_BYTES_NUM                                   6
 #define IP_ADDRESS_BYTES_NUM                                    4
@@ -231,7 +232,7 @@ typedef struct ENC28J60_Frame
     uint32_t checkSum;
 } ENC28J60_Frame;
 
-void transmit_frame(uint8_t *data, size_t size);
+void transmit_frame(uint8_t *data, uint16_t size);
 uint16_t receive_frame(ENC28J60_Frame *frame);
 void initialize_enc28j60(void);
 void start_enc28j60_receiving(void);
