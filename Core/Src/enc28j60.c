@@ -14,9 +14,9 @@ static uint16_t current_ptr = ENC28J60_RX_BUF_START;
 
 static uint8_t command_op_codes[COMMANDS_NUM] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07};
 
-uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
+uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0xB4, 0x2E, 0x99, 0x8C, 0xA3, 0xB2};
 
-uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 122};
+uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 133};
 
 static uint8_t read_control_reg(uint8_t reg);
 static uint16_t read_control_reg_pair(uint8_t reg);
@@ -309,12 +309,10 @@ void initialize_enc28j60(void){
     write_control_reg_pair(ERXNDL, ENC28J60_RX_BUF_END);
     write_control_reg_pair(ERDPTL, ENC28J60_RX_BUF_START);
 
-    write_control_reg(MAADR1, mac_address[0]);
-    write_control_reg(MAADR2, mac_address[1]);
-    write_control_reg(MAADR3, mac_address[2]);
-    write_control_reg(MAADR4, mac_address[3]);
-    write_control_reg(MAADR5, mac_address[4]);
-    write_control_reg(MAADR6, mac_address[5]);
+    bit_field_clear(ERXFCON, ERXFCON_UCEN_BIT | ERXFCON_ANDOR_BIT | ERXFCON_CRCEN_BIT | ERXFCON_PMEN_BIT | ERXFCON_MPEN_BIT | ERXFCON_HTEN_BIT | ERXFCON_MCEN_BIT | ERXFCON_BCEN_BIT);
+
+    write_control_reg(MACON1, MACON1_MARXEN_BIT);
+    write_control_reg(MACON4, MACON4_DEFER);
 
     write_control_reg_pair(MAIPGL, ENC28J60_NBB_PACKET_GAP);
     write_control_reg(MABBIPG, ENC28J60_BB_PACKET_GAP);
@@ -322,6 +320,13 @@ void initialize_enc28j60(void){
     write_control_reg(MACON3, MACON3_PADCFG0_BIT | MACON3_TXCRCEN_BIT | MACON3_FRMLNEN_BIT);
 
     write_control_reg_pair(MAMXFLL, ENC28J60_FRAME_DATA_MAX);
+
+    write_control_reg(MAADR1, mac_address[0]);
+    write_control_reg(MAADR2, mac_address[1]);
+    write_control_reg(MAADR3, mac_address[2]);
+    write_control_reg(MAADR4, mac_address[3]);
+    write_control_reg(MAADR5, mac_address[4]);
+    write_control_reg(MAADR6, mac_address[5]);
 
     write_phy_reg(PHCON2, PHCON2_HDLDIS_BIT);
 

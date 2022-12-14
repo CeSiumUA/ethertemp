@@ -62,10 +62,10 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define ENC28J60_CHIP_SELECT_Pin GPIO_PIN_5
-#define ENC28J60_CHIP_SELECT_GPIO_Port GPIOA
-#define ENC28J60_RESET_Pin GPIO_PIN_6
+#define ENC28J60_RESET_Pin GPIO_PIN_8
 #define ENC28J60_RESET_GPIO_Port GPIOA
+#define ENC28J60_CHIP_SELECT_Pin GPIO_PIN_9
+#define ENC28J60_CHIP_SELECT_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 extern uint8_t ip_address[IP_ADDRESS_BYTES_NUM];

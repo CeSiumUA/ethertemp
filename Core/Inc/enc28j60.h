@@ -26,7 +26,7 @@
 #define ENC28J60_REG_ADDR_MASK                                  0x1F
 #define ENC28J60_BUF_COMMAND_ARG                                0x1A
 #define ENC28J60_RESET_COMMAND_ARG                              0x1F
-#define ENC28J60_BB_PACKET_GAP                                  0x15
+#define ENC28J60_BB_PACKET_GAP                                  0x12
 #define ENC28J60_NBB_PACKET_GAP                                 0x0C12
 #define ENC28J60_BANK_0_BITS                                    (BANK_0 << ENC28J60_REG_BANK_OFFSET)
 #define ENC28J60_BANK_1_BITS                                    (BANK_1 << ENC28J60_REG_BANK_OFFSET)
@@ -132,6 +132,7 @@
 #define MACON3_FRMLNEN_BIT                                      (1 << 1)
 #define MACON3_FULDPX_BIT                                       (1 << 0)
 #define MACON4                                                  (0x03 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
+#define MACON4_DEFER                                            (1 << 6)
 #define MABBIPG                                                 (0x04 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
 #define MAIPGL                                                  (0x06 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
 #define MAIPGH                                                  (0x07 | ENC28J60_MAC_MII_REG_BIT | ENC28J60_BANK_2_BITS)
