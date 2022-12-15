@@ -7,6 +7,7 @@
 
 #include "ethernet.h"
 #include <string.h>
+#include <stdlib.h>
 
 static void eth_response(ETH_Frame *frame, uint16_t len);
 
@@ -34,6 +35,18 @@ void eth_process(ENC28J60_Frame *frame){
     if(response_size > 0){
         eth_response(eth_frame, response_size);
     }
+}
+
+void eth_transmit(uint8_t *data, uint16_t length, uint16_t ether_type, uint8_t dest_mac[MAC_ADDRESS_BYTES_NUM]){
+    ETH_Frame *eth_frame = malloc(sizeof(ETH_Frame) + length);
+    eth_frame -> ether_type = htons(ether_type);
+    memcpy(eth_frame -> dest_mac_address, dest_mac, MAC_ADDRESS_BYTES_NUM);
+    memcpy(eth_frame -> src_mac_address, mac_address, MAC_ADDRESS_BYTES_NUM);
+    memcpy(eth_frame -> data, data, length);
+
+    transmit_frame((uint8_t*)eth_frame, length + sizeof(ETH_Frame));
+
+    free(eth_frame);
 }
 
 static void eth_response(ETH_Frame *frame, uint16_t len){

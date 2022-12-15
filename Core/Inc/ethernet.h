@@ -23,5 +23,6 @@ typedef struct ETH_Frame{
 } ETH_Frame;
 
 void eth_process(ENC28J60_Frame *frame);
+void eth_transmit(uint8_t *data, uint16_t length, uint16_t ether_type, uint8_t dest_mac[MAC_ADDRESS_BYTES_NUM]);
 
 #endif /* INC_ETHERNET_H_ */

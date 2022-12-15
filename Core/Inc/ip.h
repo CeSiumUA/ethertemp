@@ -8,6 +8,7 @@
 #include "main.h"
 #include "ethernet.h"
 #include "icmp.h"
+#include "udp.h"
 
 #define IP_FRAME_PROTOCOL_ICMP              0x01
 #define IP_FRAME_PROTOCOL_UDP               0x11
@@ -28,5 +29,6 @@ typedef struct IP_Frame{
 
 uint8_t ip_calculate_checksum(uint8_t *data, uint16_t length);
 uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length);
+void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol, uint8_t mac_addr[MAC_ADDRESS_BYTES_NUM]);
 
 #endif //ETHERNET_TEST_IP_H
