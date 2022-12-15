@@ -21,9 +21,14 @@ void eth_process(ENC28J60_Frame *frame){
     ETH_Frame *eth_frame = (ETH_Frame*)frame->data;
     uint16_t ether_type = ntohs(eth_frame->ether_type);
 
+    uint16_t process_frame_len = request_size - sizeof(ETH_Frame);
+
+    //FIXME use switch instead
     if(ether_type == ETH_FRAME_TYPE_ARP){
-        uint16_t arp_frame_len = request_size - sizeof(ETH_Frame);
-        response_size = arp_process((ARP_Frame*)eth_frame->data, arp_frame_len);
+        response_size = arp_process((ARP_Frame*)eth_frame->data, process_frame_len);
+    }
+    else if(ether_type == ETH_FRAME_TYPE_IP){
+        response_size = ip_process((IP_Frame*)eth_frame -> data, process_frame_len);
     }
 
     if(response_size > 0){

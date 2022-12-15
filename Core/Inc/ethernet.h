@@ -10,6 +10,7 @@
 
 #include "enc28j60.h"
 #include "arp.h"
+#include "ip.h"
 
 #define ETH_FRAME_TYPE_ARP                                      0x0806
 #define ETH_FRAME_TYPE_IP                                       0x0800
