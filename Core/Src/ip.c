@@ -67,12 +67,12 @@ uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length){
     return new_frame_length;
 }
 
-void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol, uint8_t mac_addr[MAC_ADDRESS_BYTES_NUM]){
+void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol){
     IP_Frame *transmit_frame = malloc(sizeof(IP_Frame) + (data_length * sizeof (uint8_t)));
     memcpy(transmit_frame -> data, data, data_length * sizeof (uint8_t));
 
     memcpy(transmit_frame -> dest_ip_addr, dst_addr, IP_ADDRESS_BYTES_NUM);
-    memcpy(transmit_frame -> src_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM);
+    memcpy(transmit_frame -> src_ip_addr, src_addr, IP_ADDRESS_BYTES_NUM);
 
     uint32_t frame_length = data_length + sizeof(IP_Frame);
 

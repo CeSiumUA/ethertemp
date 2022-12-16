@@ -17,6 +17,6 @@ typedef struct UDP_Frame{
 } UDP_Frame;
 
 uint16_t udp_process(UDP_Frame *udp_frame, uint16_t frame_length);
-void udp_transmit(uint8_t *data, uint16_t data_length);
+void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM]);
 
 #endif //ETHERNET_TEST_UDP_H
