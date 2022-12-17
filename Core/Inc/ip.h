@@ -27,6 +27,12 @@ typedef struct IP_Frame{
     uint8_t data[];
 } IP_Frame;
 
+typedef struct hash_entry{
+    struct hash_entry *next;
+    uint16_t key;
+    uint8_t value;
+} hash_entry;
+
 uint8_t ip_calculate_checksum(uint8_t *data, uint16_t length);
 uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length);
 void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol);
