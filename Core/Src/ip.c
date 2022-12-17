@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-uint8_t ip_calculate_checksum(uint8_t *data, uint16_t length){
+uint16_t ip_calculate_checksum(uint8_t *data, uint16_t length){
     uint32_t res = 0;
     uint16_t *ptr = (uint16_t*)data;
 
@@ -29,9 +29,9 @@ uint8_t ip_calculate_checksum(uint8_t *data, uint16_t length){
 uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length){
     uint16_t new_frame_length = 0;
 
-    if(memcmp(ip_frame -> dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM) != 0) {
+    /*if(memcmp(ip_frame -> dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM) != 0) {
         return new_frame_length;
-    }
+    }*/
 
     uint16_t rx_checksum = ip_frame->header_checksum;
 

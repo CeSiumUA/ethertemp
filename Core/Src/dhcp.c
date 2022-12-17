@@ -60,7 +60,7 @@ void dhcp_discover(void){
 
     memcpy(frame->options, request_options, sizeof (request_options));
 
-    const char message1[] = "Sending DHCP Discover message...";
+    const char message1[] = "Sending DHCP Discover message...\n";
     HAL_UART_Transmit(&huart2, message1, sizeof(message1), 100);
 
     udp_transmit((uint8_t*)frame,
@@ -74,6 +74,6 @@ void dhcp_discover(void){
 
     free(frame);
 
-    const char message2[] = "DHCP discover sent and resources freed";
+    const char message2[] = "DHCP discover sent and resources freed\n";
     HAL_UART_Transmit(&huart2, message2, sizeof(message2), 100);
 }
