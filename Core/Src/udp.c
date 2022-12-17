@@ -21,7 +21,7 @@ uint16_t udp_process(UDP_Frame *udp_frame, uint16_t frame_length){
     return 0;
 }
 
-void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type){
+void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]){
     uint16_t overall_length = sizeof (UDP_Frame) + data_length;
     UDP_Frame *frame = malloc(overall_length);
 
@@ -35,7 +35,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
 
     udp_ports_table[src_port] = package_type;
 
-    ip_transmit((uint8_t*)frame, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP);
+    ip_transmit((uint8_t*)frame, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
 
     free(frame);
 }

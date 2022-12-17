@@ -67,7 +67,7 @@ uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length){
     return new_frame_length;
 }
 
-void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol){
+void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol, uint8_t dest_mac_addr[MAC_ADDRESS_BYTES_NUM]){
     IP_Frame *transmit_frame = malloc(sizeof(IP_Frame) + (data_length * sizeof (uint8_t)));
     memcpy(transmit_frame -> data, data, data_length * sizeof (uint8_t));
 
@@ -90,7 +90,7 @@ void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRES
     transmit_frame -> header_checksum = 0;
     transmit_frame -> header_checksum = ip_calculate_checksum((uint8_t*)transmit_frame, sizeof(IP_Frame));
 
-    eth_transmit((uint8_t*)transmit_frame, frame_length, ETH_FRAME_TYPE_IP, mac_address);
+    eth_transmit((uint8_t*)transmit_frame, frame_length, ETH_FRAME_TYPE_IP, dest_mac_addr);
 
     free(transmit_frame);
 }

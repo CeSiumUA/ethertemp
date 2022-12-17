@@ -21,6 +21,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "gpio.h"
+#include "dhcp.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -94,6 +95,7 @@ int main(void)
   HAL_UART_Transmit(&huart2, init_message, sizeof(init_message), 100);
   initialize_enc28j60();
   HAL_UART_Transmit(&huart2, init_finish_message, sizeof(init_finish_message), 100);
+  dhcp_discover();
   /* USER CODE END 2 */
 
   /* Infinite loop */
