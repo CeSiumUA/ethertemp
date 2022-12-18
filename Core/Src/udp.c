@@ -4,21 +4,93 @@
 #include "udp.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 //OPTIMIZE
-// consider using better approach, need to perform some tests
-static udp_package_type udp_ports_table[UDP_MAX_HASH_TABLE_SIZE];
+
+static udp_consumed_port *udp_reserved_ports;
+static uint16_t ports_whitelist[] = {67, 68, 25512};
+
+static udp_consumed_port *create_port(uint16_t port_number, udp_package_type package_type){
+    udp_reserved_ports = malloc(sizeof (udp_reserved_ports));
+    udp_reserved_ports->package_type = package_type;
+    udp_reserved_ports->port  = port_number;
+
+    return udp_reserved_ports;
+}
+
+static udp_consumed_port *get_port(uint16_t port_number){
+    udp_consumed_port *port = udp_reserved_ports;
+    while(port -> port != port_number && port != NULL){
+        port = port->next;
+    }
+
+    return port;
+}
+
+static udp_consumed_port *set_port(uint16_t port_number, udp_package_type package_type){
+
+    udp_consumed_port *port = udp_reserved_ports;
+    if(port == NULL){
+        udp_reserved_ports = create_port(port_number, package_type);
+        return udp_reserved_ports;
+    }
+
+    while (port->port != port_number){
+        if(port->next == NULL){
+            port -> next = create_port(port_number, package_type);
+        }
+        port = port->next;
+    }
+
+    port->package_type = package_type;
+
+    return port;
+}
 
 uint16_t calculate_checksum(UDP_Frame *frame){
     //TODO going to implement it in the future
     return frame->checksum;
 }
 
+static void pong(UDP_Frame *frame){
+    uint16_t dst_port = frame->src_port;
+    frame->src_port = frame->dst_port;
+    frame->dst_port = dst_port;
+}
+
 uint16_t udp_process(UDP_Frame *udp_frame, uint16_t frame_length){
     uint16_t rx_checksum = udp_frame->checksum;
     udp_frame -> checksum = 0;
 
-    return 0;
+    uint16_t package_dst_port = ntohs(udp_frame->dst_port);
+
+    bool port_allowed = false;
+
+    for(int i = 0; i < sizeof(ports_whitelist); i++){
+        if(package_dst_port == ports_whitelist[i]){
+            port_allowed = true;
+        }
+    }
+
+    if(!port_allowed) return 0;
+
+    udp_consumed_port *consumed_port = get_port(package_dst_port);
+    if(consumed_port == NULL){
+        consumed_port = set_port(package_dst_port, NONE);
+    }
+
+    switch (consumed_port->package_type) {
+        case PING_PONG:
+            pong(udp_frame);
+            break;
+        case NONE:
+        default:
+            pong(udp_frame);
+            break;
+    }
+
+    return frame_length;
 }
 
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]){
@@ -33,7 +105,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
 
     memcpy(frame->data, data, data_length);
 
-    udp_ports_table[src_port] = package_type;
+    set_port(src_port, package_type);
 
     ip_transmit((uint8_t*)frame, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
 
