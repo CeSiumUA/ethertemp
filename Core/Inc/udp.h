@@ -11,7 +11,7 @@
 #define UDP_MAX_HASH_TABLE_SIZE         65535
 
 typedef enum udp_package_type{
-    DHCP,
+    DHCP = 1,
 } udp_package_type;
 
 typedef struct UDP_Frame{
