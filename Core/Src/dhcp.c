@@ -15,10 +15,12 @@ void dhcp_discover(void){
             // Message type
             DHCP_OPTION_DHCP_MSG_TYPE, 1, 1,
             // Client identifier
-            DHCP_OPTION_CLIENT_ID, 7, 1, mac_address[0], mac_address[1], mac_address[2], mac_address[3], mac_address[4], mac_address[5],
+            DHCP_OPTION_CLIENT_ID, 7, 0x01, mac_address[0], mac_address[1], mac_address[2], mac_address[3], mac_address[4], mac_address[5],
+            //Requested IP
+            DHCP_OPTION_REQUESTED_IP, 4, ip_address[0], ip_address[1], ip_address[2], ip_address[3],
             //Host name
             DHCP_OPTION_HOST_NAME, 9, 'S', 'T', 'M', '3', '2', 'F', '4', '1', '1',
-            //Requested IP address
+            //Parameter request list
             DHCP_OPTION_PARAMETER_REQUEST_LIST, 4, DHCP_OPTION_PARAMETER_REQUEST_SUBNET_MASK, DHCP_OPTION_PARAMETER_REQUEST_ROUTE_GATEWAY, DHCP_OPTION_PARAMETER_DOMAIN_NAME, DHCP_OPTION_PARAMETER_DNS,
             //End mark
             DHCP_OPTION_END_MARK
