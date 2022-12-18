@@ -12,7 +12,15 @@
 
 typedef enum udp_package_type{
     DHCP = 1,
+    PING_PONG,
+    NONE = 0
 } udp_package_type;
+
+typedef struct udp_consumed_port{
+    uint16_t port;
+    udp_package_type package_type;
+    struct udp_consumed_port *next;
+} udp_consumed_port;
 
 typedef struct UDP_Frame{
     uint16_t src_port;
