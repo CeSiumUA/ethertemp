@@ -14,7 +14,7 @@ static uint16_t current_ptr = ENC28J60_RX_BUF_START;
 
 static uint8_t command_op_codes[COMMANDS_NUM] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07};
 
-uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0xB4, 0x2E, 0x99, 0x8C, 0xA3, 0xB2};
+uint8_t mac_address[MAC_ADDRESS_BYTES_NUM] = {0x00, 0x17, 0x22, 0xED, 0xA5, 0x01};
 
 uint8_t ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 133};
 
@@ -143,7 +143,7 @@ void transmit_frame(uint8_t *data, uint16_t size){
     write_buffer_mem(data, size);
 
     write_control_reg_pair(ETXSTL, ENC28J60_TX_BUF_START);
-    write_control_reg(ETXSTL, ENC28J60_TX_BUF_START + size);
+    write_control_reg_pair(ETXNDL, ENC28J60_TX_BUF_START + size);
 
     bit_field_set(ECON1, ECON1_TXRTS_BIT);
 }
@@ -256,6 +256,8 @@ static void write_buffer_mem(uint8_t *data, uint16_t data_size){
 
     write_command(WRITE_BUFFER_MEM, ENC28J60_BUF_COMMAND_ARG);
     write_bytes(data, data_size);
+
+    set_cs(CS_HIGH);
 }
 
 static void system_reset(void){
