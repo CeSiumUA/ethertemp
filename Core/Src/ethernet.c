@@ -24,12 +24,13 @@ void eth_process(enc28j60_frame_mask *frame){
 
     uint16_t process_frame_len = request_size - sizeof(eth_frame_mask);
 
-    //FIXME use switch instead
-    if(ether_type == ETH_FRAME_TYPE_ARP){
-        response_size = arp_process((arp_frame_mask *)eth_frame->data, process_frame_len);
-    }
-    else if(ether_type == ETH_FRAME_TYPE_IP){
-        response_size = ip_process((ip_frame_mask*)eth_frame -> data, process_frame_len);
+    switch (ether_type) {
+        case ETH_FRAME_TYPE_ARP:
+            response_size = arp_process((arp_frame_mask *)eth_frame->data, process_frame_len);
+            break;
+        case ETH_FRAME_TYPE_IP:
+            response_size = ip_process((ip_frame_mask*)eth_frame -> data, process_frame_len);
+            break;
     }
 
     if(response_size > 0){
