@@ -11,9 +11,10 @@
 #define UDP_MAX_HASH_TABLE_SIZE         65535
 
 typedef enum udp_package_type{
-    DHCP = 1,
-    PING_PONG,
-    NONE = 0
+    NONE,
+    DHCP_INCOMING = 67,
+    DHCP_OUTGOING = 68,
+    PING_PONG
 } udp_package_type;
 
 typedef struct udp_consumed_port{

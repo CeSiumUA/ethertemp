@@ -8,29 +8,79 @@
 
 static const char host_name[] = "STM32F411";
 
+static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value);
+static void fill_request_buffer(uint8_t *buf, uint16_t *counter);
+
+void dhcp_process(dhcp_frame_mask *frame, uint16_t frame_length){
+    const char message[] = "Caught DHCP message";
+    HAL_UART_Transmit(&huart2, message, sizeof (message), 100);
+}
+
+static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value){
+    *buf++ = value;
+    *counter++;
+}
+
+static void fill_request_buffer(uint8_t *buf, uint16_t *counter){
+    //Magic cookie
+    add_to_buffer(buf, counter, DHCP_MAGIC_COOKIE_0);
+    add_to_buffer(buf, counter, DHCP_MAGIC_COOKIE_1);
+    add_to_buffer(buf, counter, DHCP_MAGIC_COOKIE_2);
+    add_to_buffer(buf, counter, DHCP_MAGIC_COOKIE_3);
+
+    //Message type
+    add_to_buffer(buf, counter, DHCP_OPTION_DHCP_MSG_TYPE);
+    add_to_buffer(buf, counter, 1);
+    add_to_buffer(buf, counter, 1);
+
+    //Client identifier
+    add_to_buffer(buf, counter, DHCP_OPTION_CLIENT_ID);
+    add_to_buffer(buf, counter, sizeof (mac_address) + 1);
+    add_to_buffer(buf, counter, 0x01);
+
+    for(int i = 0; i < sizeof (mac_address); i++){
+        add_to_buffer(buf, counter, mac_address[i]);
+    }
+
+    //Requested IP
+    add_to_buffer(buf, counter, DHCP_OPTION_REQUESTED_IP);
+    add_to_buffer(buf, counter, sizeof (ip_address));
+
+    for(int i = 0; i < sizeof (ip_address); i++){
+        add_to_buffer(buf, counter, ip_address[i]);
+    }
+
+    //Host name
+    add_to_buffer(buf, counter, DHCP_OPTION_HOST_NAME);
+    add_to_buffer(buf, counter, sizeof (host_name));
+
+    for(int i = 0; i < sizeof (host_name); i++){
+        add_to_buffer(buf, counter, host_name[i]);
+    }
+
+    //Parameter request list
+    add_to_buffer(buf, counter, DHCP_OPTION_PARAMETER_REQUEST_LIST);
+    add_to_buffer(buf, counter, 4);
+    add_to_buffer(buf, counter, DHCP_OPTION_PARAMETER_REQUEST_SUBNET_MASK);
+    add_to_buffer(buf, counter, DHCP_OPTION_PARAMETER_REQUEST_ROUTE_GATEWAY);
+    add_to_buffer(buf, counter, DHCP_OPTION_PARAMETER_DOMAIN_NAME);
+    add_to_buffer(buf, counter, DHCP_OPTION_PARAMETER_DNS);
+
+    //End mark
+    add_to_buffer(buf, counter, DHCP_OPTION_END_MARK);
+}
+
 void dhcp_discover(void){
-    uint8_t request_options[] = {
-            // Magic cookie
-            DHCP_MAGIC_COOKIE_0, DHCP_MAGIC_COOKIE_1, DHCP_MAGIC_COOKIE_2, DHCP_MAGIC_COOKIE_3,
-            // Message type
-            DHCP_OPTION_DHCP_MSG_TYPE, 1, 1,
-            // Client identifier
-            DHCP_OPTION_CLIENT_ID, 7, 0x01, mac_address[0], mac_address[1], mac_address[2], mac_address[3], mac_address[4], mac_address[5],
-            //Requested IP
-            DHCP_OPTION_REQUESTED_IP, 4, ip_address[0], ip_address[1], ip_address[2], ip_address[3],
-            //Host name
-            DHCP_OPTION_HOST_NAME, 9, 'S', 'T', 'M', '3', '2', 'F', '4', '1', '1',
-            //Parameter request list
-            DHCP_OPTION_PARAMETER_REQUEST_LIST, 4, DHCP_OPTION_PARAMETER_REQUEST_SUBNET_MASK, DHCP_OPTION_PARAMETER_REQUEST_ROUTE_GATEWAY, DHCP_OPTION_PARAMETER_DOMAIN_NAME, DHCP_OPTION_PARAMETER_DNS,
-            //End mark
-            DHCP_OPTION_END_MARK
-    };
 
     uint8_t buff[ENC28J60_FRAME_DATA_MAX];
+    uint8_t request_options_buffer[100];
+    uint16_t request_options_buffer_counter = 0;
+
+    fill_request_buffer(request_options_buffer, &request_options_buffer_counter);
 
     uint32_t xid = rand();
 
-    uint16_t frame_size = sizeof (dhcp_frame_mask) + sizeof(request_options);
+    uint16_t frame_size = sizeof (dhcp_frame_mask) + request_options_buffer_counter;
 
     uint8_t *dhcp_buf_start = buff + (ENC28J60_FRAME_DATA_MAX - frame_size);
 
@@ -64,7 +114,7 @@ void dhcp_discover(void){
 
     uint8_t destination_mac_address[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-    memcpy(frame->options, request_options, sizeof (request_options));
+    memcpy(frame->options, request_options_buffer, request_options_buffer_counter);
 
     udp_transmit(dhcp_buf_start,
                  frame_size,
@@ -72,6 +122,6 @@ void dhcp_discover(void){
                  DHCP_UDP_SOURCE_PORT,
                  destination_ip_address,
                  source_ip_address,
-                 DHCP,
+                 DHCP_OUTGOING,
                  destination_mac_address);
 }

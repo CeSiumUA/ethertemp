@@ -33,8 +33,6 @@
 #define DHCP_UDP_SOURCE_PORT                        68
 #define DHCP_UDP_DESTINATION_PORT                   67
 
-void dhcp_discover(void);
-
 typedef struct dhcp_frame_mask{
     uint8_t op;
     uint8_t htype;
@@ -52,5 +50,8 @@ typedef struct dhcp_frame_mask{
     uint8_t file[128];
     uint8_t options[];
 } dhcp_frame_mask;
+
+void dhcp_process(dhcp_frame_mask *frame, uint16_t frame_length);
+void dhcp_discover(void);
 
 #endif //ETHERNET_TEST_DHCP_H
