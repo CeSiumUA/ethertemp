@@ -8,20 +8,21 @@
 
 //OPTIMIZE
 
-static udp_consumed_port *udp_reserved_ports;
+static udp_consumed_port *udp_reserved_ports = NULL;
 static uint16_t ports_whitelist[] = {67, 68, 25512};
 
 static udp_consumed_port *create_port(uint16_t port_number, udp_package_type package_type){
-    udp_reserved_ports = malloc(sizeof (udp_reserved_ports));
-    udp_reserved_ports->package_type = package_type;
-    udp_reserved_ports->port  = port_number;
+    udp_consumed_port *reserved_port = malloc(sizeof (udp_reserved_ports));
+    reserved_port->package_type = package_type;
+    reserved_port->port  = port_number;
+    reserved_port->next = NULL;
 
-    return udp_reserved_ports;
+    return reserved_port;
 }
 
 static udp_consumed_port *get_port(uint16_t port_number){
     udp_consumed_port *port = udp_reserved_ports;
-    while(port -> port != port_number && port != NULL){
+    while(port != NULL && port -> port != port_number){
         port = port->next;
     }
 
@@ -48,18 +49,18 @@ static udp_consumed_port *set_port(uint16_t port_number, udp_package_type packag
     return port;
 }
 
-uint16_t calculate_checksum(UDP_Frame *frame){
+uint16_t calculate_checksum(udp_frame_mask *frame){
     //TODO going to implement it in the future
     return frame->checksum;
 }
 
-static void pong(UDP_Frame *frame){
+static void pong(udp_frame_mask *frame){
     uint16_t dst_port = frame->src_port;
     frame->src_port = frame->dst_port;
     frame->dst_port = dst_port;
 }
 
-uint16_t udp_process(UDP_Frame *udp_frame, uint16_t frame_length){
+uint16_t udp_process(udp_frame_mask *udp_frame, uint16_t frame_length){
     uint16_t rx_checksum = udp_frame->checksum;
     udp_frame -> checksum = 0;
 
@@ -94,8 +95,8 @@ uint16_t udp_process(UDP_Frame *udp_frame, uint16_t frame_length){
 }
 
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]){
-    uint16_t overall_length = sizeof (UDP_Frame) + data_length;
-    UDP_Frame *frame = malloc(overall_length);
+    uint16_t overall_length = sizeof (udp_frame_mask) + data_length;
+    udp_frame_mask *frame = malloc(overall_length);
 
     frame->length = htons(overall_length);
     frame->src_port = htons(src_port);
