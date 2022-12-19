@@ -50,7 +50,7 @@ uint16_t ip_process(ip_frame_mask *ip_frame, uint16_t frame_length){
         new_data_len = icmp_process((icmp_echo_frame_mask*)ip_frame -> data, data_len);
     }
     else if(ip_frame->protocol == IP_FRAME_PROTOCOL_UDP){
-        new_data_len = udp_process((udp_frame_mask*)ip_frame -> data, data_len);
+        new_data_len = udp_process((udp_frame_mask*)ip_frame -> data, ip_frame->src_ip_addr, data_len);
     }
 
     new_frame_length = new_data_len + sizeof (ip_frame_mask);

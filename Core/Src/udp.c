@@ -49,20 +49,31 @@ static udp_consumed_port *set_port(uint16_t port_number, udp_package_type packag
     return port;
 }
 
-uint16_t calculate_checksum(udp_frame_mask *frame){
-    //TODO going to implement it in the future
-    return frame->checksum;
-}
-
 static void pong(udp_frame_mask *frame){
     uint16_t dst_port = frame->src_port;
     frame->src_port = frame->dst_port;
     frame->dst_port = dst_port;
 }
 
-uint16_t udp_process(udp_frame_mask *udp_frame, uint16_t frame_length){
+uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRESS_BYTES_NUM], uint16_t frame_length){
     uint16_t rx_checksum = udp_frame->checksum;
     udp_frame -> checksum = 0;
+
+    uint16_t pseudo_header_buf_length = sizeof (udp_ipv4_pseudo_header) + frame_length;
+    uint8_t pseudo_header_buf[pseudo_header_buf_length];
+
+    udp_ipv4_pseudo_header *pseudo_header = (udp_ipv4_pseudo_header *)pseudo_header_buf;
+    memcpy(pseudo_header->data, (uint8_t *)udp_frame, frame_length);
+    pseudo_header->zeros = 0;
+    pseudo_header->protocol = 0x11;
+    pseudo_header->udp_length = udp_frame->length;
+    memcpy(pseudo_header->src_ip_addr, src_ip_address, IP_ADDRESS_BYTES_NUM);
+    memcpy(pseudo_header->dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM);
+
+    uint16_t calculated_checksum = ip_calculate_checksum(pseudo_header_buf, pseudo_header_buf_length);
+    /*if(calculated_checksum != rx_checksum){
+        return 0;
+    }*/
 
     uint16_t package_dst_port = ntohs(udp_frame->dst_port);
 
@@ -108,7 +119,15 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     frame->src_port = htons(src_port);
     frame->dst_port = htons(dst_port);
     frame -> checksum = 0;
-    frame -> checksum = calculate_checksum(frame);
+
+    udp_ipv4_pseudo_header *pseudo_header_ptr = data - sizeof (udp_ipv4_pseudo_header);
+    memcpy(pseudo_header_ptr->src_ip_addr, src_address, IP_ADDRESS_BYTES_NUM);
+    memcpy(pseudo_header_ptr->dest_ip_addr, dest_mac_address, IP_ADDRESS_BYTES_NUM);
+    pseudo_header_ptr->zeros = 0;
+    pseudo_header_ptr->protocol = 0x11;
+    pseudo_header_ptr->udp_length = htons(overall_length);
+
+    frame -> checksum = ip_calculate_checksum((uint8_t *)pseudo_header_ptr, sizeof (udp_ipv4_pseudo_header) + overall_length);
 
     set_port(src_port, package_type);
 

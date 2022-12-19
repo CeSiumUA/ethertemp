@@ -77,8 +77,8 @@ static void fill_request_buffer(uint8_t *buf, uint16_t *counter){
 
 void dhcp_discover(void){
 
-    uint8_t buff[ENC28J60_FRAME_DATA_MAX];
-    uint8_t request_options_buffer[100];
+    uint8_t buff[ENC28J60_FRAME_DATA_MAX] = {0};
+    uint8_t request_options_buffer[100] = {0};
     uint16_t request_options_buffer_counter = 0;
 
     fill_request_buffer(request_options_buffer, &request_options_buffer_counter);

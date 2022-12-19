@@ -32,7 +32,16 @@ typedef struct udp_frame_mask{
     uint8_t data[];
 } udp_frame_mask;
 
-uint16_t udp_process(udp_frame_mask *udp_frame, uint16_t frame_length);
+typedef struct udp_ipv4_pseudo_header{
+    uint8_t src_ip_addr[IP_ADDRESS_BYTES_NUM];
+    uint8_t dest_ip_addr[IP_ADDRESS_BYTES_NUM];
+    uint8_t zeros;
+    uint8_t protocol;
+    uint16_t udp_length;
+    uint8_t data[];
+} udp_ipv4_pseudo_header;
+
+uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRESS_BYTES_NUM], uint16_t frame_length);
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]);
 
 #endif //ETHERNET_TEST_UDP_H
