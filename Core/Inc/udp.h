@@ -7,13 +7,14 @@
 
 #include "main.h"
 #include "ip.h"
+#include "dhcp.h"
 
 #define UDP_MAX_HASH_TABLE_SIZE         65535
 
 typedef enum udp_package_type{
     NONE,
-    DHCP_INCOMING = 67,
-    DHCP_OUTGOING = 68,
+    DHCP_SERVER = 67,
+    DHCP_CLIENT = 68,
     PING_PONG
 } udp_package_type;
 

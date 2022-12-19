@@ -78,12 +78,17 @@ uint16_t udp_process(udp_frame_mask *udp_frame, uint16_t frame_length){
 
     udp_consumed_port *consumed_port = get_port(package_dst_port);
     if(consumed_port == NULL){
-        consumed_port = set_port(package_dst_port, NONE);
+        consumed_port = set_port(package_dst_port, (udp_package_type) package_dst_port);
     }
 
     switch (consumed_port->package_type) {
         case PING_PONG:
             pong(udp_frame);
+            break;
+        case DHCP_SERVER:
+            dhcp_server_process((dhcp_frame_mask *)udp_frame->data, udp_frame->length - sizeof (udp_frame_mask));
+        case DHCP_CLIENT:
+            dhcp_client_process((dhcp_frame_mask *)udp_frame->data, udp_frame->length - sizeof (udp_frame_mask));
             break;
         case NONE:
         default:

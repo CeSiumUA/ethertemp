@@ -51,7 +51,8 @@ typedef struct dhcp_frame_mask{
     uint8_t options[];
 } dhcp_frame_mask;
 
-void dhcp_process(dhcp_frame_mask *frame, uint16_t frame_length);
+void dhcp_client_process(dhcp_frame_mask *frame, uint16_t frame_length);
+void dhcp_server_process(dhcp_frame_mask *frame, uint16_t frame_length);
 void dhcp_discover(void);
 
 #endif //ETHERNET_TEST_DHCP_H

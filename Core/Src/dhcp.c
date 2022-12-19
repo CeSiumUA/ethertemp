@@ -11,8 +11,13 @@ static const char host_name[] = "STM32F411";
 static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value);
 static void fill_request_buffer(uint8_t *buf, uint16_t *counter);
 
-void dhcp_process(dhcp_frame_mask *frame, uint16_t frame_length){
-    const char message[] = "Caught DHCP message";
+void dhcp_client_process(dhcp_frame_mask *frame, uint16_t frame_length){
+    const char message[] = "Caught DHCP client message";
+    HAL_UART_Transmit(&huart2, message, sizeof (message), 100);
+}
+
+void dhcp_server_process(dhcp_frame_mask *frame, uint16_t frame_length){
+    const char message[] = "Caught DHCP server message";
     HAL_UART_Transmit(&huart2, message, sizeof (message), 100);
 }
 
@@ -122,6 +127,6 @@ void dhcp_discover(void){
                  DHCP_UDP_SOURCE_PORT,
                  destination_ip_address,
                  source_ip_address,
-                 DHCP_OUTGOING,
+                 DHCP_CLIENT,
                  destination_mac_address);
 }
