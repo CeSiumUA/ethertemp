@@ -38,15 +38,13 @@ void eth_process(enc28j60_frame_mask *frame){
 }
 
 void eth_transmit(uint8_t *data, uint16_t length, uint16_t ether_type, uint8_t dest_mac[MAC_ADDRESS_BYTES_NUM]){
-    eth_frame_mask *eth_frame = malloc(sizeof(eth_frame_mask) + length);
+    data -= sizeof (eth_frame_mask);
+    eth_frame_mask *eth_frame = (eth_frame_mask *)data;
     eth_frame -> ether_type = htons(ether_type);
     memcpy(eth_frame -> dest_mac_address, dest_mac, MAC_ADDRESS_BYTES_NUM);
     memcpy(eth_frame -> src_mac_address, mac_address, MAC_ADDRESS_BYTES_NUM);
-    memcpy(eth_frame -> data, data, length);
 
-    transmit_frame((uint8_t*)eth_frame, length + sizeof(eth_frame_mask));
-
-    free(eth_frame);
+    transmit_frame(data, length + sizeof(eth_frame_mask));
 }
 
 static void eth_response(eth_frame_mask *frame, uint16_t len){

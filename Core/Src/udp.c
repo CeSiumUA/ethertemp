@@ -96,7 +96,8 @@ uint16_t udp_process(udp_frame_mask *udp_frame, uint16_t frame_length){
 
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]){
     uint16_t overall_length = sizeof (udp_frame_mask) + data_length;
-    udp_frame_mask *frame = malloc(overall_length);
+    data -= sizeof (udp_frame_mask);
+    udp_frame_mask *frame = (udp_frame_mask *)data;
 
     frame->length = htons(overall_length);
     frame->src_port = htons(src_port);
@@ -104,11 +105,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     frame -> checksum = 0;
     frame -> checksum = calculate_checksum(frame);
 
-    memcpy(frame->data, data, data_length);
-
     set_port(src_port, package_type);
 
-    ip_transmit((uint8_t*)frame, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
-
-    free(frame);
+    ip_transmit(data, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
 }

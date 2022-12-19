@@ -26,11 +26,15 @@ void dhcp_discover(void){
             DHCP_OPTION_END_MARK
     };
 
+    uint8_t buff[ENC28J60_FRAME_DATA_MAX];
+
     uint32_t xid = rand();
 
     uint16_t frame_size = sizeof (dhcp_frame_mask) + sizeof(request_options);
 
-    dhcp_frame_mask *frame = malloc(frame_size);
+    uint8_t *dhcp_buf_start = buff + (ENC28J60_FRAME_DATA_MAX - frame_size);
+
+    dhcp_frame_mask *frame = (dhcp_frame_mask *)dhcp_buf_start;
 
     frame->op = DHCP_OP_REQUEST;
     frame->htype = DHCP_HTYPE_ETH;
@@ -62,10 +66,7 @@ void dhcp_discover(void){
 
     memcpy(frame->options, request_options, sizeof (request_options));
 
-    const char message1[] = "Sending DHCP Discover message...\n";
-    HAL_UART_Transmit(&huart2, message1, sizeof(message1), 100);
-
-    udp_transmit((uint8_t*)frame,
+    udp_transmit(dhcp_buf_start,
                  frame_size,
                  DHCP_UDP_DESTINATION_PORT,
                  DHCP_UDP_SOURCE_PORT,
@@ -73,9 +74,4 @@ void dhcp_discover(void){
                  source_ip_address,
                  DHCP,
                  destination_mac_address);
-
-    free(frame);
-
-    const char message2[] = "DHCP discover sent and resources freed\n";
-    HAL_UART_Transmit(&huart2, message2, sizeof(message2), 100);
 }
