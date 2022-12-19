@@ -59,21 +59,7 @@ uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRES
     uint16_t rx_checksum = udp_frame->checksum;
     udp_frame -> checksum = 0;
 
-    uint16_t pseudo_header_buf_length = sizeof (udp_ipv4_pseudo_header) + frame_length;
-    uint8_t pseudo_header_buf[pseudo_header_buf_length];
-
-    udp_ipv4_pseudo_header *pseudo_header = (udp_ipv4_pseudo_header *)pseudo_header_buf;
-    memcpy(pseudo_header->data, (uint8_t *)udp_frame, frame_length);
-    pseudo_header->zeros = 0;
-    pseudo_header->protocol = 0x11;
-    pseudo_header->udp_length = udp_frame->length;
-    memcpy(pseudo_header->src_ip_addr, src_ip_address, IP_ADDRESS_BYTES_NUM);
-    memcpy(pseudo_header->dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM);
-
-    uint16_t calculated_checksum = ip_calculate_checksum(pseudo_header_buf, pseudo_header_buf_length);
-    /*if(calculated_checksum != rx_checksum){
-        return 0;
-    }*/
+    uint16_t udp_frame_length = ntohs(udp_frame->length);
 
     uint16_t package_dst_port = ntohs(udp_frame->dst_port);
 
@@ -86,6 +72,22 @@ uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRES
     }
 
     if(!port_allowed) return 0;
+
+    uint16_t pseudo_header_buf_length = sizeof (udp_ipv4_pseudo_header) + udp_frame_length;
+    uint8_t pseudo_header_buf[pseudo_header_buf_length];
+
+    udp_ipv4_pseudo_header *pseudo_header = (udp_ipv4_pseudo_header *)pseudo_header_buf;
+    memcpy(pseudo_header->data, (uint8_t *)udp_frame, udp_frame_length);
+    pseudo_header->zeros = 0;
+    pseudo_header->protocol = 0x11;
+    pseudo_header->udp_length = udp_frame->length;
+    memcpy(pseudo_header->src_ip_addr, src_ip_address, IP_ADDRESS_BYTES_NUM);
+    memcpy(pseudo_header->dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM);
+
+    uint16_t calculated_checksum = ip_calculate_checksum(pseudo_header_buf, pseudo_header_buf_length);
+    if(calculated_checksum != rx_checksum){
+        return 0;
+    }
 
     udp_consumed_port *consumed_port = get_port(package_dst_port);
     if(consumed_port == NULL){
