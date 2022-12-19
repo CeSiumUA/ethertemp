@@ -8,7 +8,7 @@
 #include "enc28j60.h"
 #include <stdint.h>
 
-static ENC28J60_RegBank current_bank = BANK_0;
+static enc28j60_reg_bank current_bank = BANK_0;
 
 static uint16_t current_ptr = ENC28J60_RX_BUF_START;
 
@@ -34,27 +34,27 @@ static void bit_field_clear(uint8_t reg, uint8_t reg_data);
 
 static void system_reset(void);
 
-static void write_command(ENC28J60_Command command, uint8_t arg_data);
+static void write_command(enc28j60_command command, uint8_t arg_data);
 
-static void set_cs(ENC28J60_CS_State state);
+static void set_cs(enc28j60_cs_state state);
 static void write_byte(uint8_t data);
 static void write_bytes(uint8_t *data, uint8_t size);
 static uint8_t read_byte(void);
 
 static uint8_t get_reg_addr(uint8_t reg);
-static ENC28J60_RegBank get_reg_bank(uint8_t reg);
-static ENC28J60_RegType get_reg_type(uint8_t reg);
+static enc28j60_reg_bank get_reg_bank(uint8_t reg);
+static enc28j60_reg_type get_reg_type(uint8_t reg);
 static void check_bank(uint8_t reg);
 
-static ENC28J60_RegType get_reg_type(uint8_t reg){
+static enc28j60_reg_type get_reg_type(uint8_t reg){
     // Applies a mask to a register, and shift to right to get a raw type value
-    ENC28J60_RegType type = (ENC28J60_RegType) ((reg & ENC28J60_REG_TYPE_MASK) >> ENC28J60_REG_TYPE_OFFSET);
+    enc28j60_reg_type type = (enc28j60_reg_type) ((reg & ENC28J60_REG_TYPE_MASK) >> ENC28J60_REG_TYPE_OFFSET);
 
     return type;
 }
 
-static ENC28J60_RegBank get_reg_bank(uint8_t reg){
-    ENC28J60_RegBank bank = (ENC28J60_RegBank) ((reg & ENC28J60_REG_BANK_MASK) >> ENC28J60_REG_BANK_OFFSET);
+static enc28j60_reg_bank get_reg_bank(uint8_t reg){
+    enc28j60_reg_bank bank = (enc28j60_reg_bank) ((reg & ENC28J60_REG_BANK_MASK) >> ENC28J60_REG_BANK_OFFSET);
     return bank;
 }
 
@@ -62,7 +62,7 @@ static uint8_t get_reg_addr(uint8_t reg){
     return (reg & ENC28J60_REG_ADDR_MASK);
 }
 
-static void set_cs(ENC28J60_CS_State state){
+static void set_cs(enc28j60_cs_state state){
     HAL_GPIO_WritePin(ENC28J60_CHIP_SELECT_GPIO_Port, ENC28J60_CHIP_SELECT_Pin, (GPIO_PinState)state);
 }
 
@@ -148,7 +148,7 @@ void transmit_frame(uint8_t *data, uint16_t size){
     bit_field_set(ECON1, ECON1_TXRTS_BIT);
 }
 
-uint16_t receive_frame(ENC28J60_Frame *frame){
+uint16_t receive_frame(enc28j60_frame_mask *frame){
     uint16_t data_size = 0;
     uint8_t packets_count = read_control_reg(EPKTCNT);
 
@@ -188,7 +188,7 @@ uint16_t receive_frame(ENC28J60_Frame *frame){
     return data_size;
 }
 
-static void write_command(ENC28J60_Command command, uint8_t arg_data){
+static void write_command(enc28j60_command command, uint8_t arg_data){
     uint8_t data = 0;
     data = (command_op_codes[command] << ENC28J60_OP_CODE_OFFSET) | arg_data;
     write_byte(data);
@@ -207,7 +207,7 @@ static void write_control_reg_pair(uint8_t reg, uint16_t reg_data){
 
 static uint8_t read_control_reg(uint8_t reg){
     uint8_t data = 0;
-    ENC28J60_RegType reg_type = get_reg_type(reg);
+    enc28j60_reg_type reg_type = get_reg_type(reg);
     uint8_t reg_addr = get_reg_addr(reg);
 
     check_bank(reg);
@@ -276,7 +276,7 @@ static void check_bank(uint8_t reg){
         return;
     }
 
-    ENC28J60_RegBank reg_bank = get_reg_bank(reg);
+    enc28j60_reg_bank reg_bank = get_reg_bank(reg);
 
     if(current_bank == reg_bank){
         return;

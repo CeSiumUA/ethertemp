@@ -35,7 +35,7 @@
 
 void dhcp_discover(void);
 
-typedef struct dhcp_frame{
+typedef struct dhcp_frame_mask{
     uint8_t op;
     uint8_t htype;
     uint8_t hlen;
@@ -51,6 +51,6 @@ typedef struct dhcp_frame{
     uint8_t sname[64];
     uint8_t file[128];
     uint8_t options[];
-} dhcp_frame;
+} dhcp_frame_mask;
 
 #endif //ETHERNET_TEST_DHCP_H

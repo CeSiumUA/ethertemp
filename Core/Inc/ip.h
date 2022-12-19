@@ -13,7 +13,7 @@
 #define IP_FRAME_PROTOCOL_ICMP              0x01
 #define IP_FRAME_PROTOCOL_UDP               0x11
 
-typedef struct IP_Frame{
+typedef struct ip_frame_mask{
     uint8_t var_header_len;
     uint8_t diff_len_services;
     uint16_t total_length;
@@ -25,16 +25,10 @@ typedef struct IP_Frame{
     uint8_t src_ip_addr[IP_ADDRESS_BYTES_NUM];
     uint8_t dest_ip_addr[IP_ADDRESS_BYTES_NUM];
     uint8_t data[];
-} IP_Frame;
-
-typedef struct hash_entry{
-    struct hash_entry *next;
-    uint16_t key;
-    uint8_t value;
-} hash_entry;
+} ip_frame_mask;
 
 uint16_t ip_calculate_checksum(uint8_t *data, uint16_t length);
-uint16_t ip_process(IP_Frame *ip_frame, uint16_t frame_length);
+uint16_t ip_process(ip_frame_mask *ip_frame, uint16_t frame_length);
 void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol, uint8_t dest_mac_addr[MAC_ADDRESS_BYTES_NUM]);
 
 #endif //ETHERNET_TEST_IP_H

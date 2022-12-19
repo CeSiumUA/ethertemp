@@ -15,14 +15,14 @@
 #define ETH_FRAME_TYPE_ARP                                      0x0806
 #define ETH_FRAME_TYPE_IP                                       0x0800
 
-typedef struct ETH_Frame{
+typedef struct eth_frame_mask{
     uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM];
     uint8_t src_mac_address[MAC_ADDRESS_BYTES_NUM];
     uint16_t ether_type;
     uint8_t data[];
-} ETH_Frame;
+} eth_frame_mask;
 
-void eth_process(ENC28J60_Frame *frame);
+void eth_process(enc28j60_frame_mask *frame);
 void eth_transmit(uint8_t *data, uint16_t length, uint16_t ether_type, uint8_t dest_mac[MAC_ADDRESS_BYTES_NUM]);
 
 #endif /* INC_ETHERNET_H_ */

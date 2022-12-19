@@ -13,7 +13,7 @@
 #define ARP_OP_CODE_REQUEST                                     0x0001
 #define ARP_OP_CODE_RESPONSE                                    0x0002
 
-typedef struct ARP_Frame{
+typedef struct arp_frame_mask{
     uint16_t h_type;
     uint16_t p_type;
     uint8_t h_len;
@@ -23,8 +23,8 @@ typedef struct ARP_Frame{
     uint8_t src_ip_addr[IP_ADDRESS_BYTES_NUM];
     uint8_t dest_mac_addr[MAC_ADDRESS_BYTES_NUM];
     uint8_t dest_ip_addr[IP_ADDRESS_BYTES_NUM];
-} ARP_Frame;
+} arp_frame_mask;
 
-uint16_t arp_process(ARP_Frame *frame, uint16_t frame_len);
+uint16_t arp_process(arp_frame_mask *frame, uint16_t frame_len);
 
 #endif /* INC_ARP_H_ */

@@ -8,7 +8,7 @@
 #include "arp.h"
 #include <string.h>
 
-uint16_t arp_process(ARP_Frame *frame, uint16_t frame_len){
+uint16_t arp_process(arp_frame_mask *frame, uint16_t frame_len){
     uint16_t new_frame_len = 0;
 
     if(memcmp(frame->dest_ip_addr, ip_address, IP_ADDRESS_BYTES_NUM) == 0){

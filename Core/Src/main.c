@@ -45,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-ENC28J60_Frame frame;
+enc28j60_frame_mask frame;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

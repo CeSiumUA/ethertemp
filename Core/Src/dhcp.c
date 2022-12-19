@@ -28,9 +28,9 @@ void dhcp_discover(void){
 
     uint32_t xid = rand();
 
-    uint16_t frame_size = sizeof (dhcp_frame) + sizeof(request_options);
+    uint16_t frame_size = sizeof (dhcp_frame_mask) + sizeof(request_options);
 
-    dhcp_frame *frame = malloc(frame_size);
+    dhcp_frame_mask *frame = malloc(frame_size);
 
     frame->op = DHCP_OP_REQUEST;
     frame->htype = DHCP_HTYPE_ETH;

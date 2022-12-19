@@ -4,7 +4,7 @@
 
 #include "icmp.h"
 
-uint16_t icmp_process(ICMP_EchoFrame *icmp_frame, uint16_t frame_length){
+uint16_t icmp_process(icmp_echo_frame_mask *icmp_frame, uint16_t frame_length){
     uint16_t new_frame_length = 0;
 
     uint16_t rx_checksum = icmp_frame -> checksum;

@@ -206,35 +206,39 @@ typedef enum
     BIT_FIELD_CLEAR,
     SYSTEM_RESET,
     COMMANDS_NUM,
-} ENC28J60_Command;
+} enc28j60_command;
+
 typedef enum
 {
     CS_LOW = 0,
     CS_HIGH = 1,
-} ENC28J60_CS_State;
+} enc28j60_cs_state;
+
 typedef enum
 {
     BANK_0,
     BANK_1,
     BANK_2,
     BANK_3,
-} ENC28J60_RegBank;
+} enc28j60_reg_bank;
+
 typedef enum
 {
     ETH_REG,
     MAC_MII_REG,
-} ENC28J60_RegType;
-typedef struct ENC28J60_Frame
+} enc28j60_reg_type;
+
+typedef struct enc28j60_frame_mask
 {
     uint16_t nextPtr;
     uint16_t length;
     uint16_t status;
     uint8_t data[ENC28J60_FRAME_DATA_MAX];
     uint32_t checkSum;
-} ENC28J60_Frame;
+} enc28j60_frame_mask;
 
 void transmit_frame(uint8_t *data, uint16_t size);
-uint16_t receive_frame(ENC28J60_Frame *frame);
+uint16_t receive_frame(enc28j60_frame_mask *frame);
 void initialize_enc28j60(void);
 void start_enc28j60_receiving(void);
 
