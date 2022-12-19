@@ -23,7 +23,7 @@ void dhcp_server_process(dhcp_frame_mask *frame, uint16_t frame_length){
 
 static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value){
     *buf++ = value;
-    *counter++;
+    (*counter)++;
 }
 
 static void fill_request_buffer(uint8_t *buf, uint16_t *counter){
