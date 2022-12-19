@@ -131,9 +131,41 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     pseudo_header_ptr->protocol = 0x11;
     pseudo_header_ptr->udp_length = htons(overall_length);
 
-    frame -> checksum = ip_calculate_checksum((uint8_t *)pseudo_header_ptr, sizeof (udp_ipv4_pseudo_header) + overall_length);
+    //frame -> checksum = ip_calculate_checksum((uint8_t *)pseudo_header_ptr, sizeof (udp_ipv4_pseudo_header) + overall_length);
+
+    frame -> checksum = 0;
 
     set_port(src_port, package_type);
 
     ip_transmit(data, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
+}
+
+bool test_udp_connectivity(void){
+    uint8_t dest_ip_address[] = {192, 168, 0, 154};
+
+    arp_table_entry *entry = get_entry(dest_ip_address);
+    if(entry == NULL){
+        arp_search(dest_ip_address);
+        return false;
+    }
+
+    uint8_t sending_buffer[ENC28J60_FRAME_DATA_MAX];
+    const char message[] = "test message from device";
+
+    uint16_t data_length = sizeof (message);
+
+    uint8_t *frame_start = sending_buffer + ENC28J60_FRAME_DATA_MAX - data_length;
+
+    memcpy(frame_start, message, data_length);
+
+    udp_transmit(frame_start,
+                 data_length,
+                 50001,
+                 TEMP_SENSOR_OUT,
+                 dest_ip_address,
+                 ip_address,
+                 TEMP_SENSOR_OUT,
+                 entry->mac_addr);
+
+    return true;
 }

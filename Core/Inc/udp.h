@@ -5,6 +5,7 @@
 #ifndef ETHERNET_TEST_UDP_H
 #define ETHERNET_TEST_UDP_H
 
+#include <stdbool.h>
 #include "main.h"
 #include "ip.h"
 #include "dhcp.h"
@@ -15,7 +16,9 @@ typedef enum udp_package_type{
     NONE,
     DHCP_SERVER = 67,
     DHCP_CLIENT = 68,
-    PING_PONG = 25512
+    PING_PONG = 25512,
+    TEMP_SENSOR_OUT = 50002,
+    TEMP_SENSOR_IN
 } udp_package_type;
 
 typedef struct udp_consumed_port{
@@ -41,6 +44,7 @@ typedef struct udp_ipv4_pseudo_header{
     uint8_t data[];
 } udp_ipv4_pseudo_header;
 
+bool test_udp_connectivity(void);
 uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRESS_BYTES_NUM], uint16_t frame_length);
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]);
 

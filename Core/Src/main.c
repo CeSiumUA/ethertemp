@@ -22,6 +22,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "dhcp.h"
+#include "udp.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -95,7 +96,8 @@ int main(void)
   HAL_UART_Transmit(&huart2, init_message, sizeof(init_message), 100);
   initialize_enc28j60();
   HAL_UART_Transmit(&huart2, init_finish_message, sizeof(init_finish_message), 100);
-  dhcp_discover();
+  HAL_Delay(5000);
+  bool is_udp_test_succeeded = false;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -103,6 +105,9 @@ int main(void)
   while (1)
   {
       eth_process(&frame);
+      if(!is_udp_test_succeeded){
+          is_udp_test_succeeded = test_udp_connectivity();
+      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
