@@ -15,7 +15,7 @@ typedef enum udp_package_type{
     NONE,
     DHCP_SERVER = 67,
     DHCP_CLIENT = 68,
-    PING_PONG
+    PING_PONG = 25512
 } udp_package_type;
 
 typedef struct udp_consumed_port{
