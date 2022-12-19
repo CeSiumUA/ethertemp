@@ -6,7 +6,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-//OPTIMIZE
+static void pong(udp_frame_mask *frame);
+static udp_consumed_port *get_port(uint16_t port_number);
+static udp_consumed_port *set_port(uint16_t port_number, udp_package_type package_type);
 
 static udp_consumed_port *udp_reserved_ports = NULL;
 static uint16_t ports_whitelist[] = {67, 68, 25512};
@@ -122,7 +124,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     frame->dst_port = htons(dst_port);
     frame -> checksum = 0;
 
-    udp_ipv4_pseudo_header *pseudo_header_ptr = data - sizeof (udp_ipv4_pseudo_header);
+    udp_ipv4_pseudo_header *pseudo_header_ptr = (udp_ipv4_pseudo_header *)(data - sizeof (udp_ipv4_pseudo_header));
     memcpy(pseudo_header_ptr->src_ip_addr, src_address, IP_ADDRESS_BYTES_NUM);
     memcpy(pseudo_header_ptr->dest_ip_addr, dest_mac_address, IP_ADDRESS_BYTES_NUM);
     pseudo_header_ptr->zeros = 0;
