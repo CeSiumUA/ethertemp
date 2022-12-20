@@ -28,7 +28,8 @@ static arp_table_entry *create_entry(uint8_t entry_ip_address[IP_ADDRESS_BYTES_N
 
 arp_table_entry *get_entry(uint8_t entry_ip_address[IP_ADDRESS_BYTES_NUM]){
     arp_table_entry *entry = arp_table;
-    while(entry != NULL && !memcmp(entry->ip_addr, entry_ip_address, IP_ADDRESS_BYTES_NUM)){
+
+    while(entry != NULL && memcmp(entry->ip_addr, entry_ip_address, IP_ADDRESS_BYTES_NUM)){
         entry = entry->next;
     }
 

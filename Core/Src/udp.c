@@ -141,7 +141,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
 }
 
 bool test_udp_connectivity(void){
-    uint8_t dest_ip_address[] = {192, 168, 0, 154};
+    uint8_t dest_ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 154};
 
     arp_table_entry *entry = get_entry(dest_ip_address);
     if(entry == NULL){
