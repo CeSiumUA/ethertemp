@@ -142,7 +142,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     ip_transmit(data, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
 }
 
-void udp_send_info_to_server(float temp_data){
+void udp_send_info_to_server(float temp_data, float rh_data){
     arp_table_entry *entry = get_entry(server_ip_address);
     if(entry == NULL){
         return;
@@ -151,7 +151,7 @@ void udp_send_info_to_server(float temp_data){
     uint8_t sending_buffer[ENC28J60_FRAME_DATA_MAX];
     const uint8_t tmp_buffer[64];
 
-    uint16_t data_length = snprintf(tmp_buffer, sizeof (tmp_buffer), "%f", temp_data);
+    uint16_t data_length = snprintf(tmp_buffer, sizeof (tmp_buffer), "%f\n%f", temp_data, rh_data);
 
     uint8_t *frame_start = sending_buffer + ENC28J60_FRAME_DATA_MAX - data_length;
 

@@ -21,6 +21,9 @@
 #define HTU21_READ_USER_REGISTER    0xE7
 #define HTU21_SOFT_RESET            0xFE
 
+#define HTU21_READ_WRITE_TIMEOUT    1000
+
 float htu_measure_temperature(void);
+float htu_measure_humidity(void);
 
 #endif //ETHERNET_TEST_HTU_H

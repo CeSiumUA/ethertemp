@@ -158,7 +158,8 @@ void SystemClock_Config(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim == &htim3) {
         float temperature = htu_measure_temperature();
-        udp_send_info_to_server(temperature);
+        float humidity = htu_measure_humidity();
+        udp_send_info_to_server(temperature, humidity);
     }
 }
 /* USER CODE END 4 */
