@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 static void pong(udp_frame_mask *frame);
 static udp_consumed_port *get_port(uint16_t port_number);
@@ -131,6 +132,7 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     pseudo_header_ptr->protocol = 0x11;
     pseudo_header_ptr->udp_length = htons(overall_length);
 
+    //FIXME Discover checksum calculation problem
     //frame -> checksum = ip_calculate_checksum((uint8_t *)pseudo_header_ptr, sizeof (udp_ipv4_pseudo_header) + overall_length);
 
     frame -> checksum = 0;
@@ -150,13 +152,15 @@ bool test_udp_connectivity(void){
     }
 
     uint8_t sending_buffer[ENC28J60_FRAME_DATA_MAX];
-    const char message[] = "test message from device";
+    const uint8_t tmp_buffer[64];
 
-    uint16_t data_length = sizeof (message);
+    int f = 27.434;
+
+    uint16_t data_length = snprintf(tmp_buffer, sizeof (tmp_buffer), "%d", f);
 
     uint8_t *frame_start = sending_buffer + ENC28J60_FRAME_DATA_MAX - data_length;
 
-    memcpy(frame_start, message, data_length);
+    memcpy(frame_start, tmp_buffer, data_length);
 
     udp_transmit(frame_start,
                  data_length,

@@ -77,7 +77,6 @@ static void write_byte(uint8_t data){
 static uint8_t read_byte(void){
     uint8_t tx_data = 0x00;
     uint8_t rx_data = 0x00;
-    //FIXME
     HAL_SPI_TransmitReceive(&hspi1, &tx_data, &rx_data, 1, ENC28J60_SPI_TIMEOUT);
     return rx_data;
 }
