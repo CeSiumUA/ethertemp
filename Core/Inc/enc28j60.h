@@ -11,6 +11,7 @@
 #include "spi.h"
 #include "usart.h"
 #include "main.h"
+#include "logger.h"
 
 #define MAC_ADDRESS_BYTES_NUM                                   6
 #define IP_ADDRESS_BYTES_NUM                                    4

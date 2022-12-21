@@ -155,9 +155,7 @@ uint16_t receive_frame(enc28j60_frame_mask *frame){
         return data_size;
     }
 
-
-
-    HAL_UART_Transmit(&huart2, receive_message_log, sizeof(receive_message_log), 100);
+    log_enc28j60_has_packages_in_buffer();
 
     write_control_reg_pair(ERDPTL, current_ptr);
 
