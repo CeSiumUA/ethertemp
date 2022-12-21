@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "spi.h"
 #include "tim.h"
 #include "usart.h"
@@ -27,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "ethernet.h"
 #include "logger.h"
+#include "htu.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -89,6 +91,7 @@ int main(void)
   MX_USART2_UART_Init();
   MX_SPI1_Init();
   MX_TIM3_Init();
+  MX_I2C2_Init();
   /* USER CODE BEGIN 2 */
   log_eth_init_start();
   initialize_enc28j60();
@@ -154,7 +157,8 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     if (htim == &htim3) {
-        udp_send_info_to_server(27.3333);
+        float temperature = htu_measure_temperature();
+        udp_send_info_to_server(temperature);
     }
 }
 /* USER CODE END 4 */
