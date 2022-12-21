@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+uint8_t server_ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 154};
+
 uint16_t ip_calculate_checksum(uint8_t *data, uint16_t length){
     uint32_t res = 0;
     uint16_t *ptr = (uint16_t*)data;

@@ -142,21 +142,16 @@ void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16
     ip_transmit(data, overall_length, dst_address, src_address, IP_FRAME_PROTOCOL_UDP, dest_mac_address);
 }
 
-bool test_udp_connectivity(void){
-    uint8_t dest_ip_address[IP_ADDRESS_BYTES_NUM] = {192, 168, 0, 154};
-
-    arp_table_entry *entry = get_entry(dest_ip_address);
+void udp_send_info_to_server(float temp_data){
+    arp_table_entry *entry = get_entry(server_ip_address);
     if(entry == NULL){
-        arp_search(dest_ip_address);
-        return false;
+        return;
     }
 
     uint8_t sending_buffer[ENC28J60_FRAME_DATA_MAX];
     const uint8_t tmp_buffer[64];
 
-    int f = 27.434;
-
-    uint16_t data_length = snprintf(tmp_buffer, sizeof (tmp_buffer), "%d", f);
+    uint16_t data_length = snprintf(tmp_buffer, sizeof (tmp_buffer), "%f", temp_data);
 
     uint8_t *frame_start = sending_buffer + ENC28J60_FRAME_DATA_MAX - data_length;
 
@@ -166,10 +161,8 @@ bool test_udp_connectivity(void){
                  data_length,
                  50001,
                  TEMP_SENSOR_OUT,
-                 dest_ip_address,
+                 server_ip_address,
                  ip_address,
                  TEMP_SENSOR_OUT,
                  entry->mac_addr);
-
-    return true;
 }

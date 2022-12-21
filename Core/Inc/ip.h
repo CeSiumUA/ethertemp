@@ -27,6 +27,8 @@ typedef struct ip_frame_mask{
     uint8_t data[];
 } ip_frame_mask;
 
+extern uint8_t server_ip_address[IP_ADDRESS_BYTES_NUM];
+
 uint16_t ip_calculate_checksum(uint8_t *data, uint16_t length);
 uint16_t ip_process(ip_frame_mask *ip_frame, uint16_t frame_length);
 void ip_transmit(uint8_t *data, uint16_t data_length, uint8_t dst_addr[IP_ADDRESS_BYTES_NUM], uint8_t src_addr[IP_ADDRESS_BYTES_NUM], uint8_t protocol, uint8_t dest_mac_addr[MAC_ADDRESS_BYTES_NUM]);

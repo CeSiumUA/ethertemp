@@ -155,7 +155,7 @@ uint16_t receive_frame(enc28j60_frame_mask *frame){
         return data_size;
     }
 
-    uint8_t receive_message_log[] = "There are some packets in buffer\n";
+
 
     HAL_UART_Transmit(&huart2, receive_message_log, sizeof(receive_message_log), 100);
 
@@ -332,6 +332,9 @@ void initialize_enc28j60(void){
     write_phy_reg(PHCON2, PHCON2_HDLDIS_BIT);
 
     start_enc28j60_receiving();
+
+    //ENC28J60 needs some delay after configuration, for debugging, it is significantly bigger, in order to more comfort monitor outgoing packages
+    HAL_Delay(ENC28J60_INITIALIZATION_DELAY);
 }
 
 void start_enc28j60_receiving(void){

@@ -44,7 +44,7 @@ typedef struct udp_ipv4_pseudo_header{
     uint8_t data[];
 } udp_ipv4_pseudo_header;
 
-bool test_udp_connectivity(void);
+void udp_send_info_to_server(float temp_data);
 uint16_t udp_process(udp_frame_mask *udp_frame, uint8_t src_ip_address[IP_ADDRESS_BYTES_NUM], uint16_t frame_length);
 void udp_transmit(uint8_t *data, uint16_t data_length, uint16_t dst_port, uint16_t src_port, uint8_t dst_address[IP_ADDRESS_BYTES_NUM], uint8_t src_address[IP_ADDRESS_BYTES_NUM], udp_package_type package_type, uint8_t dest_mac_address[MAC_ADDRESS_BYTES_NUM]);
 

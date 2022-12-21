@@ -10,6 +10,7 @@
 
 #include "spi.h"
 #include "usart.h"
+#include "main.h"
 
 #define MAC_ADDRESS_BYTES_NUM                                   6
 #define IP_ADDRESS_BYTES_NUM                                    4
@@ -195,6 +196,11 @@
 #define ENC28J60_FRAME_DATA_MAX                                 1024
 #define ENC28J60_HEADER_SIZE                                    6
 #define ENC28J60_CRC_SIZE                                       4
+#ifdef ENC28J60_IS_DEBUG_MODE
+#define ENC28J60_INITIALIZATION_DELAY                     5000
+#else
+#define ENC28J60_INITIALIZATION_DELAY                     100
+#endif
 
 typedef enum
 {

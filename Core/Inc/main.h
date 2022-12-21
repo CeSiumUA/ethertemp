@@ -68,6 +68,7 @@ void Error_Handler(void);
 #define ENC28J60_CHIP_SELECT_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
+#define ENC28J60_IS_DEBUG_MODE
 extern uint8_t ip_address[IP_ADDRESS_BYTES_NUM];
 extern uint8_t mac_address[MAC_ADDRESS_BYTES_NUM];
 /* USER CODE END Private defines */

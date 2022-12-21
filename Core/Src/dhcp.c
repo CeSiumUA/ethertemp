@@ -4,7 +4,6 @@
 #include "dhcp.h"
 #include <stdlib.h>
 #include <string.h>
-#include "usart.h"
 
 static const char host_name[] = "STM32F411";
 
@@ -12,13 +11,11 @@ static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value);
 static void fill_request_buffer(uint8_t *buf, uint16_t *counter);
 
 void dhcp_client_process(dhcp_frame_mask *frame, uint16_t frame_length){
-    const char message[] = "Caught DHCP client message";
-    HAL_UART_Transmit(&huart2, message, sizeof (message), 100);
+    log_dhcp_client_request();
 }
 
 void dhcp_server_process(dhcp_frame_mask *frame, uint16_t frame_length){
-    const char message[] = "Caught DHCP server message";
-    HAL_UART_Transmit(&huart2, message, sizeof (message), 100);
+    log_dhcp_server_request();
 }
 
 static void add_to_buffer(uint8_t *buf, uint16_t *counter, uint8_t value){

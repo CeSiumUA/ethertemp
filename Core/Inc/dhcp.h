@@ -6,6 +6,8 @@
 #define ETHERNET_TEST_DHCP_H
 
 #include "udp.h"
+#include "usart.h"
+#include "logger.h"
 
 #define DHCP_OP_REQUEST                             0x01
 #define DHCP_OP_REPLY                               0x02

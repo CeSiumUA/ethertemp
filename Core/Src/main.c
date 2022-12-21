@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "ethernet.h"
+#include "logger.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,7 +35,6 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -90,14 +90,12 @@ int main(void)
   MX_SPI1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  uint8_t init_message[] = "Initializing Ethernet\n";
-  uint8_t init_finish_message[] = "Ethernet initialization finished\n";
-
-  HAL_UART_Transmit(&huart2, init_message, sizeof(init_message), 100);
+  log_eth_init_start();
   initialize_enc28j60();
-  HAL_UART_Transmit(&huart2, init_finish_message, sizeof(init_finish_message), 100);
-  HAL_Delay(5000);
-  bool is_udp_test_succeeded = false;
+  log_eth_init_finish();
+  HAL_TIM_Base_Start_IT(&htim3);
+  arp_search_server();
+  log_arp_search_started();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,9 +103,6 @@ int main(void)
   while (1)
   {
       eth_process(&frame);
-      if(!is_udp_test_succeeded){
-          is_udp_test_succeeded = test_udp_connectivity();
-      }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -157,7 +152,11 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+    if (htim == &htim3) {
+        udp_send_info_to_server(27.3333);
+    }
+}
 /* USER CODE END 4 */
 
 /**

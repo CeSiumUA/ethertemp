@@ -35,5 +35,6 @@ typedef struct arp_table_entry{
 uint16_t arp_process(arp_frame_mask *frame, uint16_t frame_len);
 arp_table_entry *get_entry(uint8_t entry_ip_address[IP_ADDRESS_BYTES_NUM]);
 void arp_search(uint8_t dest_ip_address[IP_ADDRESS_BYTES_NUM]);
+void arp_search_server(void);
 
 #endif /* INC_ARP_H_ */

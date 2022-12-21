@@ -78,6 +78,10 @@ uint16_t arp_process(arp_frame_mask *frame, uint16_t frame_len){
     return new_frame_len;
 }
 
+void arp_search_server(void){
+    arp_search(server_ip_address);
+}
+
 void arp_search(uint8_t dest_ip_address[IP_ADDRESS_BYTES_NUM]){
     uint8_t arp_search_buffer[ARP_SEARCH_BUFFER_MAX_LENGTH];
 
