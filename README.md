@@ -69,24 +69,24 @@ The logging is performed in a straight simple way, via USART. There are function
 
 For HTU-21:
 
-HTU21  | STM32
------- | ------
-VIN    | 3.3V
-GND    | GND
-SCL    | D6 (PB10)
-SDA    | D3 (PB3)
+| HTU21 | STM32     |
+|-------|-----------|
+| VIN   | 3.3V      |
+| GND   | GND       |
+| SCL   | D6 (PB10) |
+| SDA   | D3 (PB3)  |
 
 For ENC28J60:
 
-ENC28J60 | STM32
--------- | -----
-VCC      | 3.3V
-GND      | GND
-CS       | D8 (PA9)
-RST      | D7 (PA8)
-SI       | D11 (PA7)
-SCK      | D13 (PA5)
-SO       | D12 (PA6)
+| ENC28J60 | STM32     |
+|----------|-----------|
+| VCC      | 3.3V      |
+| GND      | GND       |
+| CS       | D8 (PA9)  |
+| RST      | D7 (PA8)  |
+| SI       | D11 (PA7) |
+| SCK      | D13 (PA5) |
+| SO       | D12 (PA6) |
 
 ### Future improvements
 
